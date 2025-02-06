@@ -370,6 +370,8 @@ namespace SnmpSharpNet
 		/// <returns>String representation of hexadecimal formatted class value.</returns>
 		public string ToHexString()
 		{
+			if (_data == null)
+				return "";
 			StringBuilder b = new StringBuilder();
 			for (int i = 0; i < _data.Length; ++i)
 			{
