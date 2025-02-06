@@ -1,4 +1,4 @@
-﻿// This file is part of SNMP#NET.
+// This file is part of SNMP#NET.
 // 
 // SNMP#NET is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser Public License as published by
@@ -1167,6 +1167,58 @@ namespace SnmpSharpNet
 		/// <returns>Oid => AsnType value mappings on success, empty dictionary if no data was found or
 		/// null on error</returns>
 		public Dictionary<Oid, AsnType> Walk(SnmpVersion version, string rootOid)
+		{
+		if (rootOid.Length < 2)
+		{
+			if (!_suppressExceptions)
+				{
+					throw new SnmpException(SnmpException.InvalidOid, "RootOid is not a valid Oid");
+				}
+				return null;
+			}
+			return Walk(version, new Oid(rootOid));
+		}
+
+		/// <summary>SNMP WALK operation</summary>
+		/// <remarks>
+		/// When using SNMP version 1, walk is performed using GET-NEXT calls. When using SNMP version 2, 
+		/// walk is performed using GET-BULK calls.
+		/// </remarks>
+		/// <example>Example SNMP walk operation using SNMP version 1:
+		/// <code>
+		/// String snmpAgent = "10.10.10.1";
+		/// String snmpCommunity = "private";
+		/// SimpleSnmp snmp = new SimpleSnmp(snmpAgent, snmpCommunity);
+		/// Dictionary&lt;Oid, AsnType&gt; result = snmp.Walk(SnmpVersion.Ver1, new Oid("1.3.6.1.2.1.1"));
+		/// if( result == null ) {
+		///   Console.WriteLine("Request failed.");
+		/// } else {
+		/// foreach (KeyValuePair&lt;Oid, AsnType&gt; entry in result)
+		/// {
+		///   Console.WriteLine("{0} = {1}: {2}", entry.Key.ToString(), SnmpConstants.GetTypeName(entry.Value.Type),
+		///     entry.Value.ToString());
+		/// }
+		/// </code>
+		/// Will return:
+		/// <code>
+		/// 1.3.6.1.2.1.1.1.0 = OctetString: "Dual core Intel notebook"
+		/// 1.3.6.1.2.1.1.2.0 = ObjectId: 1.3.6.1.9.233233.1.1
+		/// 1.3.6.1.2.1.1.3.0 = TimeTicks: 0d 0h 0m 1s 420ms
+		/// 1.3.6.1.2.1.1.4.0 = OctetString: "msinadinovic@users.sourceforge.net"
+		/// 1.3.6.1.2.1.1.5.0 = OctetString: "milans-nbook"
+		/// 1.3.6.1.2.1.1.6.0 = OctetString: "Developer home"
+		/// 1.3.6.1.2.1.1.8.0 = TimeTicks: 0d 0h 0m 0s 10ms
+		/// </code>
+		/// 
+		/// To use SNMP version 2, change snmp.Set() method call first parameter to SnmpVersion.Ver2.
+		/// </example>
+		/// <param name="version">SNMP protocol version. Acceptable values are SnmpVersion.Ver1 and 
+		/// SnmpVersion.Ver2</param>
+		/// <param name="root">OID to start WALK operation from. Only child OIDs of the root will be
+		/// retrieved and returned</param>
+		/// <returns>Oid => AsnType value mappings on success, empty dictionary if no data was found or
+		/// null on error</returns>
+		public Dictionary<Oid, AsnType> Walk(SnmpVersion version, Oid root)
 		{
 			if (!Valid)
 			{
