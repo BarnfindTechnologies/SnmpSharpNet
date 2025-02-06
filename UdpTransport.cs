@@ -66,11 +66,7 @@ namespace SnmpSharpNet
 		/// </summary>
 		~UdpTransport()
 		{
-			if (_socket != null)
-			{
-				_socket.Close();
-				_socket = null;
-			}
+			Dispose(false);
 		}
 		/// <summary>
 		/// Flag used to determine if class is using IP version 6 (true) or IP version 4 (false)
@@ -576,6 +572,15 @@ namespace SnmpSharpNet
 		/// Dispose of the class.
 		/// </summary>
 		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Dispose of the class.
+		/// </summary>
+		protected virtual void Dispose(bool disposing)
 		{
 			Close();
 		}

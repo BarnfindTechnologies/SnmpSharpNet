@@ -34,7 +34,7 @@ namespace SnmpSharpNet
 	/// expect to send a lot of notifications, or a static helper TrapAgent.SendTrap method which will
 	/// construct a new socket for each call.
 	/// </remarks>
-	public class TrapAgent
+	public class TrapAgent : IDisposable
 	{
 		/// <summary>
 		/// Internal Socket class
@@ -58,8 +58,31 @@ namespace SnmpSharpNet
 		/// <remarks>Destructors only purpose is to close the Socket used by the class.</remarks>
 		~TrapAgent()
 		{
-			_sock.Close();
+			Dispose(false);
 		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_sock != null)
+			{
+				try
+				{
+					_sock.Close();
+					_sock.Dispose();
+				}
+				catch
+				{
+				}
+				_sock = null;
+			}
+		}
+
 		/// <summary>
 		/// Send SNMP version 1 Trap notification
 		/// </summary>

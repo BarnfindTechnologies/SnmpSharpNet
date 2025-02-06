@@ -34,7 +34,7 @@ namespace SnmpSharpNet
 	/// 
 	/// Either way, have fun.
 	/// </remarks>
-	public class SimpleSnmp
+	public class SimpleSnmp : IDisposable
 	{
 		/// <summary>
 		/// SNMP Agents IP address
@@ -1561,5 +1561,30 @@ namespace SnmpSharpNet
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Cancels the current request, if any
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				try
+				{
+					UdpTarget a = _target;
+					if (a != null)
+					{
+						a.Close();
+					}
+				}
+				catch
+				{ }
+			}
+		}
 	}
 }

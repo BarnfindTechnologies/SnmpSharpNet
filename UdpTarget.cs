@@ -34,7 +34,7 @@ namespace SnmpSharpNet
 	/// InternetProtocol version 4 User Datagram Protocol (IP/UDP) transport protocol
 	/// implementation for use with SNMP versions 1, 2 and 3.
 	/// </remarks>
-	public class UdpTarget: UdpTransport, IDisposable
+	public class UdpTarget: UdpTransport
 	{
 		/// <summary>
 		/// SNMP request target host IP address
