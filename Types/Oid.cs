@@ -538,7 +538,7 @@ namespace SnmpSharpNet
 			get
 			{
 				if (_data == null || index < 0 || index >= _data.Length)
-					throw new OverflowException("Requested instance is outside the bounds of the Oid array");
+					throw new ArgumentException("Requested instance is outside the bounds of the Oid array");
 				return _data[index];
 			}
 		}

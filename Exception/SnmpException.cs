@@ -21,7 +21,7 @@ namespace SnmpSharpNet
 	/// SNMP generic exception. Thrown every time SNMP specific error is encountered.
 	/// </summary>
 	[Serializable]
-	public class SnmpException : Exception
+	public class SnmpException : InvalidOperationException
 	{
 		/// <summary>
 		/// No error

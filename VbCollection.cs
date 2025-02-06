@@ -72,13 +72,13 @@ namespace SnmpSharpNet {
 		/// </summary>
 		/// <param name="index">Index position of the VarBind entry</param>
 		/// <returns>VarBind entry at the specified index</returns>
-		/// <exception cref="IndexOutOfRangeException">Thrown when index is outside the bounds of the collection</exception>
+		/// <exception cref="ArgumentException">Thrown when index is outside the bounds of the collection</exception>
 		public Vb this[int index]
 		{
 			get
 			{
 				if (index < 0 && index >= _vbs.Count)
-					throw new IndexOutOfRangeException("Requested VarBind entry is outside the collection range.");
+					throw new ArgumentException("Requested VarBind entry is outside the collection range.");
 				return _vbs[index];
 			}
 		}
