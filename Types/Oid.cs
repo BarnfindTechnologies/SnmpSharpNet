@@ -624,6 +624,54 @@ namespace SnmpSharpNet
 			return r;
 		}
 
+		/// <summary>
+		/// Return a string formatted as OID value of the passed integer array
+		/// </summary>
+		/// <param name="vals">Array of unsigned integers</param>
+		/// <returns>String formatted OID</returns>
+		public static string ToString(uint[] vals)
+		{
+			string r = "";
+			if (vals == null)
+				return r;
+			for (int i = 0; i < vals.Length; i++)
+			{
+				r += vals[i].ToString(CultureInfo.CurrentCulture);
+				if (i != (vals.Length - 1))
+				{
+					r += ".";
+				}
+			}
+			return r;
+		}
+
+		/// <summary>
+		/// Return a string formatted as OID value of the passed integer array starting at array item startpos.
+		/// </summary>
+		/// <param name="vals">Array of unsigned integers</param>
+		/// <param name="startpos">Start position in the array. 0 based.</param>
+		/// <returns>String formatted OID</returns>
+		/// <exception cref="IndexOutOfRangeException">Thrown when start position is outside of the bounds of the available data.</exception>
+		public static string ToString(uint[] vals, int startpos)
+		{
+			string r = "";
+			if (vals == null)
+				return r;
+			if (startpos < 0 || startpos >= vals.Length)
+			{
+				throw new IndexOutOfRangeException("Requested value is out of range");
+			}
+			for (int i = startpos; i < vals.Length; i++)
+			{
+				r += vals[i].ToString();
+				if (i != (vals.Length - 1))
+				{
+					r += ".";
+				}
+			}
+			return r;
+		}
+
 		#region Operators
 
 		/// <summary>
