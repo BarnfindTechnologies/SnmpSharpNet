@@ -317,7 +317,7 @@ namespace SnmpSharpNet
 			}
 			return "";
 		}
-		/// <summary>Return string representation of the OctetStrig object. If non-printable characters have been
+		/// <summary>Return string (ASCII) representation of the OctetString object. If non-printable characters have been
 		/// found in the object, output is a hex representation of the string.
 		/// </summary>
 		/// <returns>String representation of the object.</returns>
@@ -337,6 +337,29 @@ namespace SnmpSharpNet
 			else
 			{
 				rs = new String(UTF8Encoding.UTF8.GetChars(_data));
+			}
+			return rs;
+		}
+
+		/// <summary>Return string (UTF-8) representation of the OctetString object. If non-printable characters have been
+		/// found in the object, output is a hex representation of the string.
+		/// </summary>
+		/// <returns>String representation of the object.</returns>
+		public String ToStringUTF8()
+		{
+			if (_data == null || _data.Length <= 0)
+			{
+				return "";
+			}
+
+			System.String rs = null;
+			try
+			{
+				rs = new String(UTF8Encoding.UTF8.GetChars(_data));
+			}
+			catch
+			{
+				rs = ToHexString();
 			}
 			return rs;
 		}
