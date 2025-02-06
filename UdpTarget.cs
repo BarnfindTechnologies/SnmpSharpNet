@@ -274,7 +274,7 @@ namespace SnmpSharpNet
 		/// <summary>
 		/// Internal event to send result of the async request to.
 		/// </summary>
-		protected event SnmpAsyncResponse _response;
+		protected SnmpAsyncResponse _response;
 		/// <summary>
 		/// Internal storage of the agent parameters information passed to the async request member function.
 		/// </summary>
@@ -300,8 +300,7 @@ namespace SnmpSharpNet
 			{
 				return false; // class is busy
 			}
-			_response = null;
-			_response += responseCallback;
+			_response = responseCallback;
 			_agentParameters = agentParameters;
 			byte[] outPacket;
 			if (agentParameters.Version == SnmpVersion.Ver3)
