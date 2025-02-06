@@ -464,6 +464,58 @@ namespace SnmpSharpNet
 			return null;
 		}
 
+        /// <summary>
+        /// SNMP GET request
+        /// </summary>
+        /// <example>SNMP GET request:
+        /// <code>
+        /// String snmpAgent = "10.10.10.1";
+        /// String snmpCommunity = "public";
+        /// SimpleSnmp snmp = new SimpleSnmp(snmpAgent, snmpCommunity);
+        /// Dictionary&lt;Oid, AsnType&gt; result = snmp.GetNext(SnmpVersion.Ver1, new Oid ("1.3.6.1.2.1.1.1.0"));
+        /// if( result == null ) {
+        ///   Console.WriteLine("Request failed.");
+        /// } else {
+        ///   foreach (KeyValuePair&lt;Oid, AsnType&gt; entry in result)
+        ///   {
+        ///     Console.WriteLine("{0} = {1}: {2}", entry.Key.ToString(), SnmpConstants.GetTypeName(entry.Value.Type),
+        ///       entry.Value.ToString());
+        ///   }
+        /// }
+        /// </code>
+        /// Will return:
+        /// <code>
+        /// 1.3.6.1.2.1.1.1.0 = OctetString: "Dual core Intel notebook"
+        /// </code>
+        /// </example>
+        /// <param name="version">SNMP protocol version number. Acceptable values are SnmpVersion.Ver1 and SnmpVersion.Ver2</param>
+        /// <param name="oid">Single OIDS to retrieve.</param>
+        /// <returns>Result of the SNMP request in a dictionary format with Oid => AsnType values</returns>
+        public Dictionary<Oid, AsnType> Get(SnmpVersion version, Oid oid)
+        {
+            if (!Valid)
+            {
+                if (!_suppressExceptions)
+                {
+                    throw new SnmpException("SimpleSnmp class is not valid.");
+                }
+                return null;
+            }
+            // function only works on SNMP version 1 and SNMP version 2 requests
+            if (version != SnmpVersion.Ver1 && version != SnmpVersion.Ver2)
+            {
+                if (!_suppressExceptions)
+                {
+                    throw new SnmpInvalidVersionException("SimpleSnmp support SNMP version 1 and 2 only.");
+                }
+                return null;
+            }
+            Pdu pdu = new Pdu(PduType.Get);
+            pdu.VbList.Add(oid);
+            return Get(version, pdu);
+        }
+
+
 		/// <summary>
 		/// SNMP GET request
 		/// </summary>
@@ -509,6 +561,60 @@ namespace SnmpSharpNet
 				pdu.VbList.Add(s);
 			}
 
+			return Get(version, pdu);
+		}
+
+		/// <summary>
+		/// SNMP GET request
+		/// </summary>
+		/// <example>SNMP GET request:
+		/// <code>
+		/// String snmpAgent = "10.10.10.1";
+		/// String snmpCommunity = "public";
+		/// SimpleSnmp snmp = new SimpleSnmp(snmpAgent, snmpCommunity);
+		/// Dictionary&lt;Oid, AsnType&gt; result = snmp.GetNext(SnmpVersion.Ver1, new string[] { "1.3.6.1.2.1.1.1.0" });
+		/// if( result == null ) {
+		///   Console.WriteLine("Request failed.");
+		/// } else {
+		///   foreach (KeyValuePair&lt;Oid, AsnType&gt; entry in result)
+		///   {
+		///	 Console.WriteLine("{0} = {1}: {2}", entry.Key.ToString(), SnmpConstants.GetTypeName(entry.Value.Type),
+		///	   entry.Value.ToString());
+		///   }
+		/// }
+		/// </code>
+		/// Will return:
+		/// <code>
+		/// 1.3.6.1.2.1.1.1.0 = OctetString: "Dual core Intel notebook"
+		/// </code>
+		/// </example>
+		/// <param name="version">SNMP protocol version number. Acceptable values are SnmpVersion.Ver1 and SnmpVersion.Ver2</param>
+		/// <param name="oidList">List of request OIDs.</param>
+		/// <returns>Result of the SNMP request in a dictionary format with Oid => AsnType values</returns>
+		public Dictionary<Oid, AsnType> Get(SnmpVersion version, Oid[] oidList)
+		{
+			if (!Valid)
+			{
+				if (!_suppressExceptions)
+				{
+					throw new SnmpException("SimpleSnmp class is not valid.");
+				}
+				return null;
+			}
+			// function only works on SNMP version 1 and SNMP version 2 requests
+			if (version != SnmpVersion.Ver1 && version != SnmpVersion.Ver2)
+			{
+				if (!_suppressExceptions)
+				{
+					throw new SnmpInvalidVersionException("SimpleSnmp support SNMP version 1 and 2 only.");
+				}
+				return null;
+			}
+			Pdu pdu = new Pdu(PduType.Get);
+			foreach (Oid s in oidList)
+			{
+				pdu.VbList.Add(s);
+			}
 			return Get(version, pdu);
 		}
 
@@ -1181,7 +1287,7 @@ namespace SnmpSharpNet
 
 		/// <summary>SNMP WALK operation</summary>
 		/// <remarks>
-		/// When using SNMP version 1, walk is performed using GET-NEXT calls. When using SNMP version 2, 
+		/// When using SNMP version 1, walk is performed using GET-NEXT calls. When using SNMP version 2,
 		/// walk is performed using GET-BULK calls.
 		/// </remarks>
 		/// <example>Example SNMP walk operation using SNMP version 1:
@@ -1214,11 +1320,11 @@ namespace SnmpSharpNet
 		/// </example>
 		/// <param name="version">SNMP protocol version. Acceptable values are SnmpVersion.Ver1 and 
 		/// SnmpVersion.Ver2</param>
-		/// <param name="root">OID to start WALK operation from. Only child OIDs of the root will be
+		/// <param name="rootOid">OID to start WALK operation from. Only child OIDs of the root will be
 		/// retrieved and returned</param>
 		/// <returns>Oid => AsnType value mappings on success, empty dictionary if no data was found or
 		/// null on error</returns>
-		public Dictionary<Oid, AsnType> Walk(SnmpVersion version, Oid root)
+		public Dictionary<Oid, AsnType> Walk(SnmpVersion version, Oid rootOid)
 		{
 			if (!Valid)
 			{
